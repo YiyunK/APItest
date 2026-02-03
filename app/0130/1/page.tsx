@@ -46,7 +46,7 @@ export default function CrazyChatPage() {
             if (response.ok) {
                 const assistantMessage: Message = {
                     role: "assistant",
-                    content: data.response,
+                    content: data.response, rjf
                 };
                 setMessages((prev) => [...prev, assistantMessage]);
                 setMode(data.mode);
@@ -94,7 +94,7 @@ export default function CrazyChatPage() {
                             WebkitTextFillColor: "transparent",
                             backgroundClip: "text"
                         }}>
-                            {mode === "crazy" ? "🌀 급발진 Chat" : "😊 친절한 Chat"}
+                            {mode === "crazy" ? "🌀 급발진 Chat" : "🤖 뭘해도 AI"}
                         </h1>
                         <p style={{ fontSize: "0.75rem", color: "#888", marginTop: "0.25rem" }}>
                             응답 횟수: {responseCount}/2 {responseCount >= 2 && "⚠️ 급발진 모드!"}
@@ -104,9 +104,9 @@ export default function CrazyChatPage() {
             </header>
 
             <main className="chat-main">
-                <div className="messages-container">
+                <div className="messages-container" style={{ display: 'flex', gap: '1rem', height: '100%' }}>
                     {messages.length === 0 && (
-                        <div className="welcome-message">
+                        <div className="welcome-message" style={{ width: '100%' }}>
                             <div className="welcome-icon" style={{
                                 background: "linear-gradient(135deg, rgba(99, 241, 99, 0.2) 0%, rgba(92, 246, 139, 0.2) 100%)",
                                 color: "#81cf8a"
@@ -115,59 +115,121 @@ export default function CrazyChatPage() {
                                     <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
-                            <h2>🧪 실험: 급발진 AI</h2>
-                            <p>처음 2번은 친절하게... 그 다음부터는?</p>
+                            <h2>🤖 AI 전문가 Chat</h2>
+                            <p>어떤 질문이든 AI 관련 주제로 답변합니다!</p>
                             <p style={{ fontSize: "0.8rem", color: "#666", marginTop: "0.5rem" }}>
-                                ⚠️ 3번째 응답부터 AI가 이상해집니다!
+                                💡 3번째 응답부터는 더 전문적인 내용으로!
                             </p>
                         </div>
                     )}
 
-                    {messages.map((message, index) => (
-                        <div
-                            key={index}
-                            className={`message ${message.role === "user" ? "user-message" : "assistant-message"}`}
-                        >
-                            <div className="message-avatar" style={
-                                message.role === "assistant" && mode === "crazy" && responseCount >= 2
-                                    ? { background: "linear-gradient(135deg, #f16363 0%, #f6845c 100%)", borderColor: "#f16363" }
-                                    : {}
-                            }>
-                                {message.role === "user" ? (
-                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                ) : (
-                                    <span>{mode === "crazy" && responseCount >= 2 ? "🤪" : "😊"}</span>
-                                )}
-                            </div>
-                            <div className="message-content">
-                                <span className="message-role" style={
-                                    message.role === "assistant" && mode === "crazy" && responseCount >= 2
-                                        ? { color: "#f16363" }
-                                        : {}
-                                }>
-                                    {message.role === "user" ? "You" : (mode === "crazy" && responseCount >= 2 ? "급발진 AI" : "친절한 AI")}
-                                </span>
-                                <p>{message.content}</p>
-                            </div>
-                        </div>
-                    ))}
+                    {messages.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+                            {messages.reduce((pairs: any[], message, index) => {
+                                if (message.role === 'user') {
+                                    const nextMessage = messages[index + 1];
+                                    pairs.push({
+                                        question: message,
+                                        answer: nextMessage?.role === 'assistant' ? nextMessage : null
+                                    });
+                                }
+                                return pairs;
+                            }, []).map((pair, pairIndex) => (
+                                <div key={pairIndex} style={{
+                                    display: 'flex',
+                                    gap: '1rem',
+                                    width: '100%'
+                                }}>
+                                    {/* Left - User Question */}
+                                    <div style={{
+                                        flex: 1,
+                                        background: 'rgba(99, 102, 241, 0.05)',
+                                        padding: '1.5rem',
+                                        borderRadius: '12px',
+                                        border: '1px solid rgba(99, 102, 241, 0.2)'
+                                    }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            marginBottom: '0.75rem'
+                                        }}>
+                                            <span style={{
+                                                fontSize: '0.85rem',
+                                                fontWeight: '600',
+                                                color: '#8b5cf6'
+                                            }}>
+                                                👤 You
+                                            </span>
+                                        </div>
+                                        <p style={{ margin: 0, lineHeight: '1.6', color: '#e0e0e0' }}>
+                                            {pair.question.content}
+                                        </p>
+                                    </div>
 
-                    {isLoading && (
-                        <div className="message assistant-message">
-                            <div className="message-avatar">
-                                <span>🤔</span>
-                            </div>
-                            <div className="message-content">
-                                <span className="message-role">AI</span>
-                                <div className="typing-indicator">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
+                                    {/* Right - AI Response */}
+                                    <div style={{
+                                        flex: 1,
+                                        background: mode === "crazy" && responseCount >= 2
+                                            ? 'rgba(241, 99, 99, 0.05)'
+                                            : 'rgba(34, 197, 94, 0.05)',
+                                        padding: '1.5rem',
+                                        borderRadius: '12px',
+                                        border: mode === "crazy" && responseCount >= 2
+                                            ? '1px solid rgba(241, 99, 99, 0.2)'
+                                            : '1px solid rgba(34, 197, 94, 0.2)'
+                                    }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem',
+                                            marginBottom: '0.75rem'
+                                        }}>
+                                            <span style={{
+                                                fontSize: '0.85rem',
+                                                fontWeight: '600',
+                                                color: mode === "crazy" && responseCount >= 2 ? '#f16363' : '#22c55e'
+                                            }}>
+                                                🤖 AI
+                                            </span>
+                                        </div>
+                                        {pair.answer ? (
+                                            <p style={{ margin: 0, lineHeight: '1.6', color: '#e0e0e0' }}>
+                                                {pair.answer.content}
+                                            </p>
+                                        ) : (
+                                            <div className="typing-indicator">
+                                                <span></span>
+                                                <span></span>
+                                                <span></span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            ))}
+
+                            {isLoading && messages[messages.length - 1]?.role === 'user' && (
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '1rem',
+                                    width: '100%'
+                                }}>
+                                    <div style={{ flex: 1 }}></div>
+                                    <div style={{
+                                        flex: 1,
+                                        background: 'rgba(34, 197, 94, 0.05)',
+                                        padding: '1.5rem',
+                                        borderRadius: '12px',
+                                        border: '1px solid rgba(34, 197, 94, 0.2)'
+                                    }}>
+                                        <div className="typing-indicator">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
